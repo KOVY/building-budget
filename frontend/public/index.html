@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Budget - Rozpočty staveb</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="logo">
+                <h1>Building Budget</h1>
+            </div>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="#" class="active" id="projects-link">Projekty</a></li>
+                    <li><a href="#" id="subscription-link">Předplatné</a></li>
+                    <li><a href="#" id="profile-link">Profil</a></li>
+                    <li><a href="#" id="logout-link">Odhlásit</a></li>
+                </ul>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Přihlašovací formulář -->
+            <section id="login-section" class="auth-section">
+                <div class="auth-container">
+                    <h2>Přihlášení</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-email">E-mail</label>
+                            <input type="email" id="login-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Heslo</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Přihlásit se</button>
+                    </form>
+                    <p>Nemáte účet? <a href="#" id="show-register-link">Registrujte se</a></p>
+                </div>
+            </section>
+
+            <!-- Registrační formulář -->
+            <section id="register-section" class="auth-section hidden">
+                <div class="auth-container">
+                    <h2>Registrace</h2>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="register-username">Uživatelské jméno</label>
+                            <input type="text" id="register-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">E-mail</label>
+                            <input type="email" id="register-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Heslo</label>
+                            <input type="password" id="register-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password-confirm">Potvrzení hesla</label>
+                            <input type="password" id="register-password-confirm" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrovat se</button>
+                    </form>
+                    <p>Již máte účet? <a href="#" id="show-login-link">Přihlaste se</a></p>
+                </div>
+            </section>
+
+            <!-- Seznam projektů -->
+            <section id="projects-section" class="content-section hidden">
+                <div class="section-header">
+                    <h2>Moje projekty</h2>
+                    <button id="new-project-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nový projekt
+                    </button>
+                </div>
+                
+                <div class="projects-container">
+                    <!-- Zde budou karty projektů -->
+                </div>
+                
+                <div class="empty-state hidden">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>Zatím nemáte žádné projekty</h3>
+                    <p>Vytvořte svůj první projekt kliknutím na tlačítko "Nový projekt"</p>
+                </div>
+            </section>
+
+            <!-- Detail projektu -->
+            <section id="project-detail-section" class="content-section hidden">
+                <div class="section-header">
+                    <button class="btn btn-secondary back-btn">
+                        <i class="fas fa-arrow-left"></i> Zpět na projekty
+                    </button>
+                    <h2 id="project-name">Název projektu</h2>
+                    <div class="project-actions">
+                        <button id="edit-project-btn" class="btn btn-secondary">
+                            <i class="fas fa-edit"></i> Upravit
+                        </button>
+                        <button id="delete-project-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Smazat
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="project-info">
+                    <div class="info-card">
+                        <h3>Informace o projektu</h3>
+                        <p><strong>Lokalita:</strong> <span id="project-location">-</span></p>
+                        <p><strong>Typ budovy:</strong> <span id="project-building-type">-</span></p>
+                        <p><strong>Celková plocha:</strong> <span id="project-area">-</span> m²</p>
+                        <p><strong>Komplexnost:</strong> <span id="project-complexity">-</span>/10</p>
+                        <p><strong>Stav:</strong> <span id="project-status">-</span></p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Soubory projektu</h3>
+                        <div class="upload-container">
+                            <form id="file-upload-form">
+                                <div class="file-drop-area">
+                                    <span class="file-msg">Přetáhněte soubory sem nebo klikněte pro výběr</span>
+                                    <input class="file-input" type="file" multiple accept=".pdf,.dwg,.ifc">
+                                </div>
+                                <button type="submit" class="btn btn-primary upload-btn">
+                                    <i class="fas fa-upload"></i> Nahrát soubory
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="files-list">
+                            <!-- Zde budou soubory projektu -->
+                        </div>
+                        
+                        <div class="empty-files hidden">
+                            <i class="fas fa-file"></i>
+                            <p>Zatím nemáte žádné soubory</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-budgets">
+                    <div class="section-header">
+                        <h3>Rozpočty</h3>
+                        <button id="generate-budget-btn" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i> Generovat rozpočet
+                        </button>
+                    </div>
+                    
+                    <div class="budgets-list">
+                        <!-- Zde budou rozpočty projektu -->
+                    </div>
+                    
+                    <div class="empty-budgets hidden">
+                        <i class="fas fa-calculator"></i>
+                        <p>Zatím nemáte žádné rozpočty</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Formulář pro vytvoření/úpravu projektu -->
+            <section id="project-form-section" class="content-section hidden">
+                <div class="section-header">
+                    <button class="btn btn-secondary back-btn">
+                        <i class="fas fa-arrow-left"></i> Zpět
+                    </button>
+                    <h2 id="project-form-title">Nový projekt</h2>
+                </div>
+                
+                <form id="project-form">
+                    <div class="form-group">
+                        <label for="project-form-name">Název projektu</label>
+                        <input type="text" id="project-form-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-form-description">Popis projektu</label>
+                        <textarea id="project-form-description" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-form-location">Lokalita</label>
+                        <input type="text" id="project-form-location">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-form-building-type">Typ budovy</label>
+                        <select id="project-form-building-type">
+                            <option value="residential">Obytná budova</option>
+                            <option value="commercial">Komerční budova</option>
+                            <option value="industrial">Průmyslová budova</option>
+                            <option value="other">Jiný typ</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-form-area">Celková plocha (m²)</label>
+                        <input type="number" id="project-form-area" min="0" step="0.1">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-project-btn">Zrušit</button>
+                        <button type="submit" class="btn btn-primary">Uložit projekt</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Detail rozpočtu -->
+            <section id="budget-detail-section" class="content-section hidden">
+                <div class="section-header">
+                    <button class="btn btn-secondary back-to-project-btn">
+                        <i class="fas fa-arrow-left"></i> Zpět na projekt
+                    </button>
+                    <h2 id="budget-name">Název rozpočtu</h2>
+                    <div class="budget-actions">
+                        <button id="export-pdf-btn" class="btn btn-secondary">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button id="export-excel-btn" class="btn btn-secondary">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="budget-info">
+                    <p><strong>Projekt:</strong> <span id="budget-project-name">-</span></p>
+                    <p><strong>Vytvořeno:</strong> <span id="budget-created-at">-</span></p>
+                    <p><strong>Stav:</strong> <span id="budget-status">-</span></p>
+                </div>
+                
+                <div class="budget-items">
+                    <h3>Položky rozpočtu</h3>
+                    
+                    <div class="budget-table-container">
+                        <table class="budget-table">
+                            <thead>
+                                <tr>
+                                    <th>Položka</th>
+                                    <th>Množství</th>
+                                    <th>Jednotka</th>
+                                    <th>Cena/j</th>
+                                    <th>Celkem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="budget-items-tbody">
+                                <!-- Zde budou položky rozpočtu -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-right"><strong>Celkem bez DPH:</strong></td>
+                                    <td id="budget-total">0,00 Kč</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-right"><strong>DPH (<span id="budget-vat-rate">21</span>%):</strong></td>
+                                    <td id="budget-vat">0,00 Kč</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-right"><strong>Celkem s DPH:</strong></td>
+                                    <td id="budget-total-with-vat">0,00 Kč</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="empty-budget-items hidden">
+                        <i class="fas fa-list"></i>
+                        <p>Rozpočet neobsahuje žádné položky</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Předplatné -->
+            <section id="subscription-section" class="content-section hidden">
+                <div class="section-header">
+                    <h2>Moje předplatné</h2>
+                </div>
+                
+                <div class="subscription-info">
+                    <div class="info-card">
+                        <h3>Aktuální předplatné</h3>
+                        <p><strong>Typ předplatného:</strong> <span id="subscription-type">-</span></p>
+                        <p><strong>Platnost do:</strong> <span id="subscription-expires">-</span></p>
+                        <p><strong>Zbývá dní:</strong> <span id="subscription-days-remaining">-</span></p>
+                        <p><strong>Stav:</strong> <span id="subscription-status">-</span></p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Limity předplatného</h3>
+                        <p><strong>Maximální počet projektů:</strong> <span id="subscription-max-projects">-</span></p>
+                        <p><strong>Maximální počet souborů na projekt:</strong> <span id="subscription-max-files">-</span></p>
+                        <p><strong>Maximální komplexnost projektu:</strong> <span id="subscription-max-complexity">-</span></p>
+                        <p><strong>Export do PDF:</strong> <span id="subscription-pdf-export">-</span></p>
+                        <p><strong>Export do Excel:</strong> <span id="subscription-excel-export">-</span></p>
+                    </div>
+                </div>
+                
+                <div class="subscription-plans">
+                    <h3>Dostupné plány předplatného</h3>
+                    
+                    <div class="plans-container">
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <h4>Zkušební verze</h4>
+                                <p class="plan-price">Zdarma</p>
+                                <p class="plan-duration">30 dní</p>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Max. 3 projekty</li>
+                                    <li>Max. 3 soubory na projekt</li>
+                                    <li>Komplexnost projektu do 5</li>
+                                    <li>Náhled 2 stran rozpočtu v PDF</li>
+                                    <li class="not-included">Export do Excel</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary activate-trial-btn">Aktivovat zkušební verzi</button>
+                        </div>
+                        
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <h4>Základní</h4>
+                                <p class="plan-price">1 000 Kč</p>
+                                <p class="plan-duration">měsíčně</p>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Max. 10 projektů</li>
+                                    <li>Max. 10 souborů na projekt</li>
+                                    <li>Komplexnost projektu do 5</li>
+                                    <li>Kompletní export do PDF</li>
+                                    <li>Export do Excel</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary activate-subscription-btn" data-type="basic">Aktivovat předplatné</button>
+                        </div>
+                        
+                        <div class="plan-card recommended">
+                            <div class="plan-header">
+                                <span class="recommended-badge">Doporučeno</span>
+                                <h4>Profesionální</h4>
+                                <p class="plan-price">3 000 Kč</p>
+                                <p class="plan-duration">měsíčně</p>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Max. 50 projektů</li>
+                                    <li>Max. 30 souborů na projekt</li>
+                                    <li>Komplexnost projektu do 8</li>
+                                    <li>Kompletní export do PDF</li>
+                                    <li>Export do Excel</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary activate-subscription-btn" data-type="professional">Aktivovat předplatné</button>
+                        </div>
+                        
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <h4>Podnikové</h4>
+                                <p class="plan-price">8 000 Kč</p>
+                                <p class="plan-duration">měsíčně</p>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Neomezený počet projektů</li>
+                                    <li>Neomezený počet souborů na projekt</li>
+                                    <li>Komplexnost projektu do 10</li>
+                                    <li>Kompletní export do PDF</li>
+                                    <li>Export do Excel</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary activate-subscription-btn" data-type="enterprise">Aktivovat předplatné</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profil uživatele -->
+            <section id="profile-section" class="content-section hidden">
+                <div class="section-header">
+                    <h2>Můj profil</h2>
+                </div>
+                
+                <div class="profile-info">
+                    <div class="info-card">
+                        <h3>Osobní údaje</h3>
+                        <p><strong>Uživatelské jméno:</strong> <span id="profile-username">-</span></p>
+                        <p><strong>E-mail:</strong> <span id="profile-email">-</span></p>
+                        <p><strong>Registrován od:</strong> <span id="profile-created-at">-</span></p>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button id="change-password-btn" class="btn btn-secondary">
+                        <i class="fas fa-key"></i> Změnit heslo
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Building Budget. Všechna práva vyhrazena.</p>
+        </footer>
+    </div>
+
+    <!-- Modální okna -->
+    <div id="modal-overlay" class="hidden">
+        <div id="modal-container">
+            <div class="modal-header">
+                <h3 id="modal-title">Název modálního okna</h3>
+                <button id="modal-close" class="modal-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modal-content">
+                <!-- Obsah modálního okna -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifikace -->
+    <div id="notification-container"></div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
