@@ -1,218 +1,179 @@
-# Dokumentace pro nasazení aplikace Building Budget
+# Nasazení aplikace Building Budget
 
-Tato dokumentace poskytuje podrobné instrukce pro nasazení aplikace Building Budget, která umožňuje vytváření stavebních rozpočtů na základě souborů různých formátů (PDF, DWG, IFC).
+Tento dokument obsahuje podrobné instrukce pro nasazení aplikace Building Budget v produkčním prostředí.
 
-## Obsah
+## Nasazení frontendu na Vercel
 
-1. [Přehled architektury](#přehled-architektury)
-2. [Požadavky](#požadavky)
-3. [Nasazení na GitHub](#nasazení-na-github)
-4. [Nasazení na Replit](#nasazení-na-replit)
-5. [Konfigurace n8n](#konfigurace-n8n)
-6. [Propojení komponent](#propojení-komponent)
-7. [Testování](#testování)
-8. [Řešení problémů](#řešení-problémů)
+### Příprava
 
-## Přehled architektury
+1. Vytvořte účet na [Vercel](https://vercel.com) (pokud jej ještě nemáte)
+2. Propojte svůj GitHub účet s Vercel
+3. Importujte repozitář Building Budget do Vercel
 
-Aplikace Building Budget se skládá z následujících komponent:
+### Konfigurace
 
-- **Backend**: Node.js aplikace s Express.js, která poskytuje API pro správu projektů, souborů a rozpočtů
-- **Frontend**: Webové rozhraní pro interakci s aplikací
-- **Databáze**: SQL databáze pro ukládání dat
-- **n8n**: Workflow automatizační nástroj pro zpracování souborů a generování rozpočtů
+1. V nastavení projektu na Vercel nakonfigurujte následující proměnné prostředí:
+   - `NEXT_PUBLIC_API_URL`: URL vašeho backend API (např. `https://api.building-budget.com`)
+   - `NEXT_PUBLIC_STRIPE_PUBLIC_KEY`: Veřejný klíč Stripe pro zpracování plateb
 
-Architektura podporuje nahrávání více souborů v rámci jednoho projektu, extrakci dat z různých typů souborů a generování položkových rozpočtů.
+2. Nastavte framework preset na Next.js
+3. Nastavte root directory na `frontend`
+4. Nastavte build command na `npm run build`
+5. Nastavte output directory na `.next`
 
-## Požadavky
+### Nasazení
 
-Pro nasazení aplikace budete potřebovat:
+1. Klikněte na tlačítko "Deploy" v Vercel dashboardu
+2. Po úspěšném nasazení bude frontend dostupný na přidělené doméně (např. `building-budget.vercel.app`)
+3. Můžete nakonfigurovat vlastní doménu v nastavení projektu
 
-- **GitHub účet** pro správu kódu
-- **Replit účet** pro hostování aplikace
-- **n8n účet** pro automatizaci workflow
-- **Node.js** (verze 14 nebo vyšší)
-- **SQL databáze** (MySQL, PostgreSQL nebo SQLite)
+## Nasazení backendu
 
-## Nasazení na GitHub
+### Možnost 1: Nasazení na Heroku
 
-### 1. Vytvoření repozitáře
+1. Vytvořte účet na [Heroku](https://heroku.com) (pokud jej ještě nemáte)
+2. Nainstalujte Heroku CLI: `npm install -g heroku`
+3. Přihlaste se do Heroku: `heroku login`
+4. Vytvořte novou aplikaci: `heroku create building-budget-api`
+5. Přidejte MongoDB add-on: `heroku addons:create mongolab`
+6. Nastavte proměnné prostředí:
+   ```bash
+   heroku config:set NODE_ENV=production
+   heroku config:set FRONTEND_URL=https://building-budget.vercel.app
+   heroku config:set JWT_SECRET=vaše_tajné_heslo
+   heroku config:set STRIPE_SECRET_KEY=váš_stripe_tajný_klíč
+   heroku config:set STRIPE_WEBHOOK_SECRET=váš_stripe_webhook_secret
+   heroku config:set N8N_BASE_URL=https://vaše-n8n-instance.com
+   heroku config:set N8N_API_KEY=váš_n8n_api_klíč
+   ```
+7. Nasaďte backend:
+   ```bash
+   git subtree push --prefix backend heroku main
+   ```
 
-1. Přihlaste se do svého GitHub účtu
-2. Vytvořte nový repozitář s názvem "building-budget"
-3. Naklonujte repozitář do lokálního prostředí:
+### Možnost 2: Nasazení na vlastní server
 
-```bash
-git clone https://github.com/[vaše-uživatelské-jméno]/building-budget.git
-cd building-budget
-```
+1. Připravte server s Node.js (minimálně verze 16)
+2. Nainstalujte PM2: `npm install -g pm2`
+3. Nakopírujte backend složku na server
+4. Nastavte proměnné prostředí v souboru `.env`:
+   ```
+   NODE_ENV=production
+   PORT=5000
+   MONGO_URI=mongodb://localhost:27017/building-budget
+   FRONTEND_URL=https://building-budget.vercel.app
+   JWT_SECRET=vaše_tajné_heslo
+   JWT_EXPIRE=30d
+   STRIPE_SECRET_KEY=váš_stripe_tajný_klíč
+   STRIPE_WEBHOOK_SECRET=váš_stripe_webhook_secret
+   N8N_BASE_URL=https://vaše-n8n-instance.com
+   N8N_API_KEY=váš_n8n_api_klíč
+   ```
+5. Nainstalujte závislosti: `npm install --production`
+6. Spusťte aplikaci pomocí PM2: `pm2 start src/server.js --name building-budget-api`
+7. Nastavte automatický restart: `pm2 startup` a následujte instrukce
+8. Uložte konfiguraci PM2: `pm2 save`
 
-### 2. Nahrání kódu do repozitáře
+## Nasazení n8n
 
-1. Zkopírujte všechny soubory z lokální implementace do adresáře repozitáře
-2. Přidejte soubory do Git, vytvořte commit a nahrajte na GitHub:
+### Možnost 1: n8n Cloud
 
-```bash
-git add .
-git commit -m "Initial commit"
-git push origin main
-```
-
-## Nasazení na Replit
-
-### 1. Vytvoření nového projektu na Replit
-
-1. Přihlaste se do svého Replit účtu
-2. Klikněte na "Create" a vyberte "Import from GitHub"
-3. Zadejte URL vašeho GitHub repozitáře
-4. Vyberte "Node.js" jako jazyk projektu
-5. Klikněte na "Import from GitHub"
-
-### 2. Konfigurace projektu na Replit
-
-1. Po importu projektu otevřete soubor `.replit` a upravte ho následovně:
-
-```
-language = "nodejs"
-run = "npm start"
-```
-
-2. Vytvořte soubor `.env` pro konfiguraci prostředí:
-
-```
-# Databázová konfigurace
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=password
-DB_NAME=building_budget
-DB_DIALECT=sqlite
-
-# JWT konfigurace
-JWT_SECRET=building-budget-secret
-JWT_EXPIRATION=86400
-
-# n8n konfigurace
-N8N_BASE_URL=https://[vaše-n8n-instance].n8n.cloud
-N8N_API_KEY=[váš-n8n-api-klíč]
-
-# Port aplikace
-PORT=3000
-```
-
-3. Nainstalujte závislosti a spusťte aplikaci:
-
-```bash
-npm install
-npm start
-```
-
-### 3. Nastavení databáze
-
-Pro SQLite (výchozí konfigurace):
-
-1. Databáze bude automaticky vytvořena při prvním spuštění aplikace
-2. Není potřeba žádná další konfigurace
-
-Pro MySQL nebo PostgreSQL:
-
-1. Vytvořte databázi na vašem databázovém serveru
-2. Upravte konfiguraci v souboru `.env` podle vašeho databázového serveru
-
-## Konfigurace n8n
-
-### 1. Vytvoření n8n účtu
-
-1. Zaregistrujte se na [n8n.io](https://n8n.io/)
+1. Zaregistrujte se na [n8n.cloud](https://n8n.cloud)
 2. Vytvořte novou instanci n8n
+3. Importujte workflow šablony z adresáře `n8n-workflows`
+4. Nakonfigurujte proměnné prostředí v n8n:
+   - `BUILDING_BUDGET_API_URL`: URL vašeho backend API
+   - `BUILDING_BUDGET_API_KEY`: API klíč pro přístup k vašemu API
 
-### 2. Import workflow
+### Možnost 2: Vlastní n8n instance
 
-1. Přihlaste se do n8n
-2. Klikněte na "Workflows" a poté na "Import from File"
-3. Nahrajte soubor `n8n-workflow.json`, který jste poskytli
-4. Uložte workflow
+1. Nainstalujte n8n: `npm install -g n8n`
+2. Vytvořte složku pro n8n data: `mkdir ~/.n8n`
+3. Nastavte proměnné prostředí:
+   ```bash
+   export N8N_ENCRYPTION_KEY=vaše_tajné_heslo
+   export N8N_PORT=5678
+   export BUILDING_BUDGET_API_URL=https://api.building-budget.com
+   export BUILDING_BUDGET_API_KEY=váš_api_klíč
+   ```
+4. Spusťte n8n: `n8n start`
+5. Importujte workflow šablony z adresáře `n8n-workflows`
+6. Pro produkční nasazení použijte PM2:
+   ```bash
+   pm2 start n8n --name n8n -- start
+   pm2 startup
+   pm2 save
+   ```
 
-### 3. Konfigurace workflow
+## Konfigurace Stripe
 
-1. Otevřete importovaný workflow
-2. Upravte HTTP Request nody tak, aby směřovaly na vaši Replit aplikaci:
-   - Nahraďte URL `http://localhost:3000` za URL vaší Replit aplikace
-3. Nastavte API klíč pro komunikaci mezi n8n a aplikací:
-   - Vygenerujte náhodný řetězec jako API klíč
-   - Přidejte tento klíč do hlaviček HTTP Request nodů
-   - Stejný klíč nastavte v souboru `.env` na Replitu (N8N_API_KEY)
-4. Aktivujte workflow kliknutím na "Active" přepínač
+1. Vytvořte účet na [Stripe](https://stripe.com)
+2. V Stripe dashboardu vytvořte produkty a cenové plány odpovídající vašim předplatným a balíčkům
+3. Aktualizujte ID cenových plánů v modelech `SubscriptionPlan` a `ProjectPackage`
+4. Nastavte webhook endpoint v Stripe dashboardu na `https://api.building-budget.com/api/subscriptions/webhook`
+5. Zkopírujte webhook secret a nastavte jej jako `STRIPE_WEBHOOK_SECRET` v proměnných prostředí backendu
 
-## Propojení komponent
+## Inicializace databáze
 
-### 1. Propojení Replit s n8n
-
-1. V Replit aplikaci otevřete soubor `src/services/n8nIntegration.js`
-2. Upravte konstanty `N8N_BASE_URL` a `N8N_WORKFLOW_IDS` podle vaší n8n instance:
+Po prvním spuštění backendu se automaticky vytvoří výchozí předplatné plány a projektové balíčky. Pokud potřebujete vytvořit administrátorský účet, použijte následující skript:
 
 ```javascript
-const N8N_BASE_URL = 'https://[vaše-n8n-instance].n8n.cloud';
-const N8N_WORKFLOW_IDS = {
-  FILE_PROCESSING: '[id-workflow-pro-zpracování-souborů]',
-  BUDGET_GENERATION: '[id-workflow-pro-generování-rozpočtů]'
-};
+// Uložte jako scripts/create-admin.js
+const mongoose = require('mongoose');
+const User = require('../src/models/User');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
+
+async function createAdmin() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    
+    const adminPassword = 'admin123'; // Změňte na bezpečné heslo
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(adminPassword, salt);
+    
+    const admin = await User.create({
+      firstName: 'Admin',
+      lastName: 'User',
+      email: 'admin@building-budget.com',
+      password: hashedPassword,
+      role: 'admin'
+    });
+    
+    console.log('Admin user created:', admin);
+    process.exit(0);
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+    process.exit(1);
+  }
+}
+
+createAdmin();
 ```
 
-3. ID workflow najdete v URL při otevření workflow v n8n
+Spusťte skript příkazem: `node scripts/create-admin.js`
 
-### 2. Nastavení webhooků v n8n
+## Údržba a monitoring
 
-1. V n8n otevřete workflow pro zpracování souborů
-2. Najděte Webhook nody a zkopírujte jejich URL
-3. V Replit aplikaci otevřete soubor `src/routes/n8nRoutes.js`
-4. Upravte cesty pro webhooky tak, aby odpovídaly cestám v n8n
+Pro monitoring aplikace doporučujeme:
 
-## Testování
-
-### 1. Testování backend API
-
-1. Použijte nástroj jako Postman nebo cURL pro testování API endpointů
-2. Otestujte registraci a přihlášení uživatele
-3. Otestujte vytvoření projektu
-4. Otestujte nahrání souborů
-5. Otestujte generování rozpočtu
-
-### 2. Testování frontend rozhraní
-
-1. Otevřete URL vaší Replit aplikace v prohlížeči
-2. Zaregistrujte nového uživatele
-3. Vytvořte nový projekt
-4. Nahrajte soubory různých typů (PDF, DWG, IFC)
-5. Vygenerujte rozpočet
-6. Otestujte export rozpočtu
-
-### 3. Testování n8n integrace
-
-1. Nahrajte soubor do aplikace
-2. Zkontrolujte, zda se v n8n spustil workflow pro zpracování souboru
-3. Zkontrolujte, zda byla extrahovaná data uložena v aplikaci
-4. Vygenerujte rozpočet a zkontrolujte, zda se spustil workflow pro generování rozpočtu
+1. Nastavit Sentry.io pro sledování chyb
+2. Použít PM2 monitoring pro sledování výkonu Node.js
+3. Nastavit pravidelné zálohování MongoDB databáze
+4. Implementovat health check endpointy pro kontrolu stavu služeb
 
 ## Řešení problémů
 
-### Problémy s připojením k databázi
+### Frontend se nenačítá
+- Zkontrolujte, zda je správně nastavena proměnná `NEXT_PUBLIC_API_URL`
+- Ověřte, zda backend API je dostupné a funkční
 
-- Zkontrolujte konfiguraci v souboru `.env`
-- Ujistěte se, že databázový server je spuštěný a dostupný
-- Zkontrolujte přístupová práva k databázi
+### Backend API vrací chyby
+- Zkontrolujte logy pomocí `heroku logs` nebo `pm2 logs`
+- Ověřte připojení k MongoDB
+- Zkontrolujte, zda jsou správně nastaveny všechny proměnné prostředí
 
-### Problémy s n8n integrací
-
-- Zkontrolujte, zda jsou workflow v n8n aktivní
-- Zkontrolujte, zda URL a API klíče jsou správně nakonfigurovány
-- Zkontrolujte logy v n8n pro případné chyby
-
-### Problémy s Replit
-
-- Restartujte Replit projekt
-- Zkontrolujte logy v konzoli
-- Ujistěte se, že všechny závislosti jsou správně nainstalovány
-
----
-
-V případě dalších problémů nebo dotazů se obraťte na podporu nebo vytvořte issue v GitHub repozitáři.
+### n8n workflow nefungují
+- Zkontrolujte, zda je n8n instance dostupná
+- Ověřte, zda jsou workflow aktivovány
+- Zkontrolujte logy n8n pro detailnější informace o chybách

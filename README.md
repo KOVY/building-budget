@@ -1,132 +1,103 @@
-# Building Budget - Multi-File Project Support
+# Building Budget - Vylepšená verze
 
-Tento repozitář obsahuje implementaci aplikace Building Budget s podporou pro více souborů v rámci jednoho projektu.
+Toto je vylepšená verze aplikace Building Budget pro automatizované generování stavebních rozpočtů z různých typů souborů (PDF, DWG, IFC).
 
-## Přehled
+## Funkce
 
-Building Budget je webová aplikace, která umožňuje nahrávat různé typy stavebních dokumentů (PDF technické zprávy, DWG výkresy, IFC BIM modely) a automaticky z nich generovat položkové rozpočty stavby. Aplikace využívá databáze směrných a položkových cen stavebních prací a materiálů.
+- Moderní, responzivní uživatelské rozhraní
+- Zpracování různých typů souborů (PDF, DWG, IFC)
+- Automatická extrakce dat z nahraných souborů
+- Generování detailních rozpočtů na základě extrahovaných dat
+- Správa projektů a rozpočtů
+- Uživatelské účty a týmová spolupráce
+- Integrace s n8n pro automatizované zpracování souborů
+- Různé úrovně předplatného a projektové balíčky
 
-Tato verze aplikace přidává podporu pro více souborů v rámci jednoho projektu, což umožňuje:
-- Vytvářet projekty s více soubory různých typů
-- Extrahovat komplementární data z různých souborů
-- Generovat komplexní rozpočty na základě dat ze všech souborů
-- Implementovat hybridní monetizační model založený na komplexnosti projektu
+## Technologie
+
+### Frontend
+- Next.js
+- React
+- Tailwind CSS
+- Axios pro API volání
+
+### Backend
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- JWT pro autentizaci
+
+### Integrace
+- n8n pro automatizaci workflow
+- Stripe pro zpracování plateb
 
 ## Struktura projektu
 
 ```
-building-budget-multifile/
-├── backend/                  # Backend aplikace (Node.js/Express)
-│   ├── src/
-│   │   ├── config/           # Konfigurační soubory
-│   │   ├── controllers/      # Kontrolery pro API endpointy
-│   │   ├── models/           # Databázové modely (SQL)
-│   │   ├── routes/           # API routy
-│   │   ├── services/         # Business logika
-│   │   │   ├── extractors/   # Extraktory dat ze souborů
-│   │   │   ├── generators/   # Generátory rozpočtů
-│   │   │   └── pricing/      # Přístup k cenovým databázím
-│   │   └── utils/            # Pomocné funkce
-│   ├── .env.example          # Vzorový konfigurační soubor
-│   ├── package.json          # Závislosti backendu
-│   └── server.js             # Hlavní soubor serveru
-├── frontend/                 # Frontend aplikace
-│   ├── public/               # Statické soubory
-│   ├── src/
-│   │   ├── assets/           # Obrázky, styly, fonty
-│   │   ├── components/       # React komponenty
-│   │   ├── pages/            # Stránky aplikace
-│   │   ├── services/         # API služby
-│   │   └── utils/            # Pomocné funkce
-│   ├── package.json          # Závislosti frontendu
-│   └── index.html            # Hlavní HTML soubor
-├── n8n/                      # n8n workflow
-│   └── workflows/            # Exportované n8n workflow
-├── docs/                     # Dokumentace
-│   ├── api/                  # API dokumentace
-│   ├── database/             # Databázová dokumentace
-│   └── deployment/           # Návod na nasazení
-└── README.md                 # Hlavní dokumentace projektu
+building-budget-enhanced/
+├── frontend/           # Next.js frontend
+│   ├── public/         # Statické soubory
+│   └── src/            # Zdrojový kód
+│       ├── components/ # React komponenty
+│       ├── pages/      # Stránky aplikace
+│       ├── hooks/      # Custom React hooks
+│       ├── context/    # React context pro state management
+│       ├── utils/      # Pomocné funkce
+│       └── styles/     # CSS styly
+├── backend/            # Node.js backend
+│   └── src/
+│       ├── controllers/  # Kontrolery pro API endpointy
+│       ├── models/       # Datové modely
+│       ├── routes/       # API routy
+│       ├── services/     # Byznys logika
+│       ├── middleware/   # Middleware funkce
+│       └── utils/        # Pomocné funkce
+└── n8n-workflows/      # n8n workflow šablony
 ```
 
 ## Instalace a spuštění
 
 ### Požadavky
-- Node.js (verze 14 nebo vyšší)
-- MySQL (verze 5.7 nebo vyšší)
-- n8n (volitelné, pro automatizaci workflow)
-
-### Backend
-
-1. Přejděte do adresáře backend:
-```
-cd backend
-```
-
-2. Nainstalujte závislosti:
-```
-npm install
-```
-
-3. Vytvořte soubor .env podle vzoru .env.example a nastavte připojení k databázi.
-
-4. Vytvořte databázi a tabulky:
-```
-npm run db:setup
-```
-
-5. Spusťte server:
-```
-npm start
-```
-
-Server bude dostupný na adrese http://localhost:3000
+- Node.js 16+
+- MongoDB
+- n8n instance
 
 ### Frontend
 
-1. Přejděte do adresáře frontend:
-```
+```bash
 cd frontend
-```
-
-2. Nainstalujte závislosti:
-```
 npm install
+npm run dev
 ```
 
-3. Spusťte vývojový server:
+### Backend
+
+```bash
+cd backend
+npm install
+npm run dev
 ```
-npm start
-```
 
-Frontend bude dostupný na adrese http://localhost:5173
+### Nastavení n8n
 
-## Integrace s n8n
+1. Nainstalujte n8n: `npm install -g n8n`
+2. Spusťte n8n: `n8n start`
+3. Importujte workflow šablony z adresáře `n8n-workflows`
 
-Pro integraci s n8n je potřeba:
+## Cenové plány
 
-1. Nainstalovat a spustit n8n podle instrukcí na [n8n.io](https://n8n.io/)
-2. Importovat workflow ze složky n8n/workflows
-3. Nakonfigurovat připojení k API backendu
+### Předplatné
+- **Free**: Zdarma, 1 projekt
+- **Standard**: 2 490 Kč/měsíc nebo 23 900 Kč/rok, 5 projektů
+- **Professional**: 4 990 Kč/měsíc nebo 47 900 Kč/rok, 15 projektů
+- **Enterprise**: 9 990 Kč/měsíc nebo 95 900 Kč/rok, neomezený počet projektů
 
-## Funkce
-
-- Vytváření projektů s více soubory různých typů
-- Nahrávání a správa souborů (PDF, DWG, IFC)
-- Extrakce dat ze souborů
-- Generování položkových rozpočtů
-- Export rozpočtů do PDF a Excel
-- Správa uživatelů a předplatného
-
-## Monetizační model
-
-Aplikace nabízí několik úrovní předplatného:
-
-- **Zkušební verze** (1 měsíc zdarma): Max. 3 projekty, náhled 2 stran rozpočtu
-- **Základní předplatné** (1000 Kč/měsíc): Max. 10 projektů, komplexnost do 5
-- **Profesionální předplatné** (3000 Kč/měsíc): Max. 50 projektů, komplexnost do 8
-- **Podnikové předplatné** (8000 Kč/měsíc): Neomezený počet projektů, libovolná komplexnost
+### Projektové balíčky
+- **Malý projekt**: 1 990 Kč, 1 projekt, platnost 3 měsíce
+- **Střední projekt**: 4 990 Kč, 3 projekty, platnost 6 měsíců
+- **Velký projekt**: 9 990 Kč, 5 projektů, platnost 12 měsíců
 
 ## Licence
 
-ISC
+Tento projekt je licencován pod [MIT licencí](LICENSE).
